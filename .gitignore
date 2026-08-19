@@ -1,2 +1,15 @@
 .env
-__pycache__
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Licensed course material
+data/
+
+# Local Qdrant data
+qdrant_storage/
+
+# IDE
+.vscode/
+.idea/

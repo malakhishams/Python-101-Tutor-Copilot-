@@ -48,9 +48,7 @@ def _embed(embedding_client, text: str) -> list[float]:
 
 
 def retrieve_node(state: TutorState, qdrant_client, embedding_client) -> TutorState:
-    """LangGraph node function. Reads student_question / retrieval_query,
-    writes retrieved_chunks (and possibly needs_clarification /
-    clarifying_question, if retrieval comes back weak)."""
+    """Retrieve relevant textbook chunks from Qdrant."""
 
     query = _build_query(state)
     state["retrieval_query"] = query
@@ -68,8 +66,36 @@ def retrieve_node(state: TutorState, qdrant_client, embedding_client) -> TutorSt
     if not hits or hits[0].score < SCORE_THRESHOLD:
         state["retrieved_chunks"] = []
         state["needs_clarification"] = True
-        state["clarifying_question"] = WEAK_RETRIEVAL_CLARIFYING_QUESTION
+        state["clarifying_question"] = (
+            WEAK_RETRIEVAL_CLARIFYING_QUESTION
+        )
         return state
+
+    chunks: list[RetrievedChunk] = []
+
+    for hit in hits:
+        payload = hit.payload or {}
+
+        chunks.append(
+            RetrievedChunk(
+                text=payload.get("text", ""),
+                page=payload.get("page", -1),
+                chapter=payload.get("chapter", ""),
+                chunk_id=payload.get(
+                    "chunk_id",
+                    str(hit.id),
+                ),
+                score=hit.score,
+            )
+        )
+
+    state["retrieved_chunks"] = chunks
+
+    # Retrieval succeeded.
+    state["needs_clarification"] = False
+    state["clarifying_question"] = None
+
+    return state
 
     chunks: list[RetrievedChunk] = []
     for hit in hits:

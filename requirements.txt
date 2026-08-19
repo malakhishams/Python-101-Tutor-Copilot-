@@ -1,0 +1,6 @@
+google-genai
+python-dotenv
+langgraph
+qdrant-client
+sentence-transformers
+pypdf
