@@ -109,6 +109,10 @@ Python-101-Tutor-Copilot/
 ├── tools/
 │   ├── schemas.py
 │   └── registry.py
+|
+├── observablility/
+│   ├── langfuse_setup.py
+│   └── eval_set.py
 │
 ├── run.py
 ├── requirements.txt

@@ -103,6 +103,30 @@ def trace_event(
         print(f"Langfuse tracing warning for '{name}': {exc}")
 
 
+def score_current_trace(
+    name: str,
+    value: float,
+    comment: str | None = None,
+) -> None:
+    """
+    Attach a numeric evaluation score (0-1) to the currently active
+    Langfuse trace. Used by observability/eval_set.py to record
+    groundedness / clarity / correctness per Story 07.
+
+    No-ops if Langfuse isn't configured, same fail-open pattern as the
+    rest of this module -- evaluation should never crash a run.
+    """
+    client = get_langfuse_client()
+
+    if client is None:
+        return
+
+    try:
+        client.score_current_trace(name=name, value=value, comment=comment)
+    except Exception as exc:
+        print(f"Langfuse scoring warning for '{name}': {exc}")
+
+
 def flush_langfuse() -> None:
     """
     Flush pending Langfuse events.
