@@ -96,16 +96,3 @@ def retrieve_node(state: TutorState, qdrant_client, embedding_client) -> TutorSt
     state["clarifying_question"] = None
 
     return state
-
-    chunks: list[RetrievedChunk] = []
-    for hit in hits:
-        payload = hit.payload or {}
-        chunks.append(
-            RetrievedChunk(
-                text=payload.get("text", ""),
-                page=payload.get("page", -1),
-                chapter=payload.get("chapter", ""),
-                chunk_id=payload.get("chunk_id", str(hit.id)),
-                score=hit.score,
-            )
-        )

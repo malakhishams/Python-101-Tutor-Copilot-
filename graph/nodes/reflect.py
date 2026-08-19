@@ -19,36 +19,65 @@ not a reflection judgment (was this attempt good?).
 
 from graph.state import TutorState
 
+
 REFLECT_SYSTEM_PROMPT = """You are a strict but fair reviewer for a beginner (Level 1) Python tutoring answer.
 
-Check the draft answer against the textbook excerpts on three criteria:
-1. CORRECTNESS: Every claim in the draft must be supported by the excerpts. No outside knowledge, no invented facts.
-2. TONE: Language must be beginner-friendly. No jargon, no advanced shortcuts, no assumed prior knowledge beyond Level 1.
-3. EXAMPLE_MATCH: The tiny code example must actually demonstrate the concept explained in the text -- not a mismatched or unrelated example.
+Check the draft answer against the retrieved textbook excerpts on four criteria:
+
+1. CORRECTNESS:
+Every factual claim in the draft must be supported by the provided textbook excerpts.
+Do not allow unsupported outside knowledge or invented facts.
+
+2. TONE:
+The language must be beginner-friendly and appropriate for a Level 1 Python student.
+Avoid unnecessary jargon, advanced shortcuts, or assumed prior knowledge.
+
+3. EXAMPLE_MATCH:
+The tiny code example must actually demonstrate the concept explained in the answer.
+The example must not contradict the explanation.
+
+4. GROUNDING:
+The answer must clearly rely on the retrieved textbook material and must not make claims that go beyond what the excerpts support.
 
 Respond in EXACTLY this format, nothing else:
+
 VERDICT: pass
+
 or
+
 VERDICT: fail
 FEEDBACK: <one or two sentences, specific and actionable, describing exactly what to fix>
 
 Only include FEEDBACK if VERDICT is fail."""
 
-REFLECT_USER_PROMPT_TEMPLATE = """Student question: {question}
 
-Textbook excerpts used:
+REFLECT_USER_PROMPT_TEMPLATE = """Student question:
+{question}
+
+Retrieved textbook excerpts:
 {excerpts}
 
 Draft answer to review:
-{draft}"""
+{draft}
+
+Review the draft against the four criteria and return the required VERDICT format."""
 
 
 def _format_excerpts(chunks: list[dict]) -> str:
-    lines = []
-    for chunk in chunks:
-        lines.append(f"(chunk_id={chunk['chunk_id']}) {chunk['text']}")
-    return "\n\n".join(lines)
+    """Format retrieved chunks with citation metadata."""
 
+    lines = []
+
+    for i, chunk in enumerate(chunks, start=1):
+        lines.append(
+            f"[{i}] "
+            f"chunk_id={chunk['chunk_id']} | "
+            f"chapter={chunk['chapter']} | "
+            f"page={chunk['page']}\n"
+            f"{chunk['text']}"
+        )
+
+    return "\n\n".join(lines)
 
 def _parse_reflection_response(response: str) -> tuple[str, str | None]:
     """Parses the constrained VERDICT/FEEDBACK format. Falls back to

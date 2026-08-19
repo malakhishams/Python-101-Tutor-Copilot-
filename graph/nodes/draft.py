@@ -55,12 +55,26 @@ def _format_excerpts(chunks: list[dict]) -> str:
 
 
 def _extract_citations(chunks: list[dict]) -> list[str]:
-    """Citations are derived directly from what was retrieved, not
-    parsed out of the LLM's free-text response -- this guarantees every
-    citation shown to the student is a real chunk_id that exists in
-    Qdrant, even if the LLM's own citation list in the text is messy."""
-    return [chunk["chunk_id"] for chunk in chunks]
+    """Build citations directly from retrieved Qdrant metadata.
 
+    Each citation includes page, chapter, and chunk_id so the source is
+    traceable and useful for debugging/evaluation.
+    """
+    citations = []
+
+    for chunk in chunks:
+        page = chunk.get("page", -1)
+        chapter = chunk.get("chapter", "")
+        chunk_id = chunk.get("chunk_id", "")
+
+        if chapter:
+            citation = f"p. {page} | {chapter} | {chunk_id}"
+        else:
+            citation = f"p. {page} | {chunk_id}"
+
+        citations.append(citation)
+
+    return citations
 
 def draft_node(state: TutorState, llm_client) -> TutorState:
     """LangGraph node function. Reads student_question / student_code /
