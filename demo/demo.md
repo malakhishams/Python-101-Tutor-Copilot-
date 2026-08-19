@@ -23,7 +23,7 @@ The output includes:
 - Citation metadata for the retrieved textbook chunks
 - Reflection and retry handling
 
-![End-to-End RAG Demo](demo/screenshots/01_end_to_end_rag.png)
+![End-to-End RAG Demo](screenshots/01_end_to_end_rag.png)
 
 ---
 
