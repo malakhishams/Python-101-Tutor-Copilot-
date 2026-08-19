@@ -37,7 +37,7 @@ The generated vectors are then stored in the Qdrant collection:
 
 The ingestion process successfully indexed **787 chunks** from the course material.
 
-![Qdrant Ingestion](demo/screenshots/02_qdrant_ingestion.png)
+![Qdrant Ingestion](screenshots/02_qdrant_ingestion.png)
 
 ---
 
@@ -47,7 +47,7 @@ Before retrieval, the project verifies that the Qdrant vector database is availa
 
 This confirms that the vector database is ready to support semantic retrieval for the tutor.
 
-![Qdrant Health Check](demo/screenshots/03_qdrant_health_check.png)
+![Qdrant Health Check](screenshots/03_qdrant_health_check.png)
 
 ---
 
@@ -64,7 +64,7 @@ The implemented tools include:
 
 The example below demonstrates a request to create a beginner-level practice quiz about Python lists.
 
-![Tool Calling Quiz](demo/screenshots/04_tool_calling_quiz.png)
+![Tool Calling Quiz](screenshots/04_tool_calling_quiz.png)
 
 ---
 
@@ -76,7 +76,7 @@ For example, if a student asks for debugging help but does not provide their cod
 
 Instead, it routes the request to the clarification path and asks the student to provide the missing information.
 
-![Clarification Path](demo/screenshots/05_clarification_path.png)
+![Clarification Path](screenshots/05_clarification_path.png)
 
 ---
 
@@ -92,7 +92,7 @@ The trace provides visibility into important stages of the graph, including:
 
 This makes it easier to inspect the agent workflow, monitor latency, and review the input and output of the application.
 
-![Langfuse Trace](demo/screenshots/06_langfuse_trace.png)
+![Langfuse Trace](screenshots/06_langfuse_trace.png)
 
 ---
 
