@@ -4,6 +4,9 @@ Shared state for the Python 101 Tutor Copilot LangGraph.
 Every node reads from and writes to this single TypedDict as it flows
 through the graph: intake -> plan -> route -> retrieve -> draft -> reflect
 -> (loop back once, or) finalize.
+
+Tool requests can also be routed through the safe tool handler:
+intake -> tool_handler -> END
 """
 
 from typing import TypedDict, Optional, List, Dict, Any
@@ -54,25 +57,57 @@ class TutorState(TypedDict):
     final_answer: str
 
     # ---- tools / logging (Story 03) ----
+
+    # Name of the requested tool, for example:
+    # "create_practice_quiz"
+    # "recommend_exercises"
+    # "log_student_question"
+    # "escalate_to_ta"
+    requested_tool: Optional[str]
+
+    # Raw arguments that will be validated by the corresponding
+    # Pydantic schema before the tool is executed.
+    tool_arguments: Dict[str, Any]
+
+    # History of every tool call made during this graph run.
     tool_calls: List[ToolCall]
 
 
-def create_initial_state(student_question: str, student_code: Optional[str] = None) -> TutorState:
+def create_initial_state(
+    student_question: str,
+    student_code: Optional[str] = None,
+) -> TutorState:
     """Factory for a fresh TutorState at the start of a run."""
+
     return TutorState(
+        # ---- intake ----
         student_question=student_question,
         student_code=student_code,
+
+        # ---- planning ----
         intent="",
         plan=[],
         needs_clarification=False,
         clarifying_question=None,
+
+        # ---- retrieval ----
         retrieval_query="",
         retrieved_chunks=[],
+
+        # ---- drafting ----
         draft_answer="",
         citations=[],
+
+        # ---- reflection ----
         reflection_verdict="",
         reflection_feedback=None,
         retry_count=0,
+
+        # ---- output ----
         final_answer="",
+
+        # ---- tools ----
+        requested_tool=None,
+        tool_arguments={},
         tool_calls=[],
     )
